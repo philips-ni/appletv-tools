@@ -1,5 +1,11 @@
 # appletv-tools
 
+`"gen_live_stream_source_list.py` is a script which can help AppleTV APTV user to generate live stream source files automatically.
+
+After those source files are created, users can host those files in a home PC http server, then users can config such link in APTV app, which is a awesome live stream App in Apple TV.
+
+See https://youtu.be/66rfnh6UplI
+
 ## How to install 
 
 ```
@@ -27,10 +33,12 @@ INFO 2024-07-16T21:20:44.142801-0700 - mcast_3.txt created
 INFO 2024-07-16T21:21:27.819163-0700 - Text with URLs saved to tmp.txt
 INFO 2024-07-16T21:21:27.896241-0700 - url: http://tonkiang.us/hotellist.html?s=58.37.91.59%3A4000&Submit=+
 INFO 2024-07-16T21:21:41.861823-0700 - url: http://tonkiang.us/hotellist.html?s=58.37.91.59%3A4000&Submit=+, text:    IPTV Link Search
+...
 ```
 
 The content of mcast_N.txt is like:
 ```
+(base) ➜  appletv-tools git:(main) ✗ cat mcast_1.txt
 山西黄河HD,http://221.205.167.229:8085/rtp/226.0.2.235:9792
 山西经济与科技HD,http://221.205.167.229:8085/rtp/226.0.2.236:9800
 山西影视HD,http://221.205.167.229:8085/rtp/226.0.2.237:9808
@@ -57,6 +65,7 @@ CCTV14-HD,http://221.205.167.229:8085/rtp/226.0.2.166:9240
 HD,http://221.205.167.229:8085/rtp/226.0.2.168:9256
 CCTV16-HD,http://221.205.167.229:8085/rtp/226.0.2.169:9264
 CCTV17-HD,http://221.205.167.229:8085/rtp/226.0.2.170:9272
+...
 ```
 
 
@@ -77,3 +86,7 @@ The default chromedriver in this repo is for MAC OS, if you are running in other
 If the version of chromedriver is too low, please also download proper chromedriver file from https://developer.chrome.com/docs/chromedriver/downloads.
 
 
+
+## Video link
+
+ - 
