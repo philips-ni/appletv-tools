@@ -70,5 +70,10 @@ CCTV17-HD,http://221.205.167.229:8085/rtp/226.0.2.170:9272
  
  
 
+## Troubleshooting
+
+The default chromedriver in this repo is for MAC OS, if you are running in other OS, please find proper chromedriver file from https://developer.chrome.com/docs/chromedriver/downloads.
+
+If the version of chromedriver is too low, please also download proper chromedriver file from https://developer.chrome.com/docs/chromedriver/downloads.
 
 
