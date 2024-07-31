@@ -7,10 +7,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import re
 import time
+from google.cloud import storage
 from loguru import logger
 import typer
 import sys
 import os
+import yaml
 
 driver_path = "./chromedriver"
 base_url = "http://tonkiang.us/hotellist.html"
@@ -36,7 +38,7 @@ def get_webpage_text_selenium(
     url,
     filename,
     click_link_2=False,
-    click_link_3=False,        
+    click_link_3=False,
     search_regex_pattern="http[s]?://",
     max_retries=10,
 ):
@@ -94,7 +96,7 @@ def get_webpage_text_selenium(
                     # Extract and return the content of the page
                     page_3 = driver.find_element(By.TAG_NAME, "body").text
                     text = text + "\n" + page_3
-                    
+
                 # Save the text to a file if URLs are found
                 with open(filename, "w", encoding="utf-8") as file:
                     file.write(text)
@@ -102,7 +104,7 @@ def get_webpage_text_selenium(
                 return text
             else:
                 # Increment the retry counter if no URLs are found
-                logger.info(f"url: {url}, text: {text}")                
+                logger.info(f"url: {url}, text: {text}")
                 logger.info(f"No URLs found on retry {retries + 1}. Retrying...")
                 retries += 1
 
@@ -155,14 +157,6 @@ def gen_output_file(ip_port, output_file):
         with open(output_file, "w", encoding="utf-8") as file:
             file.write(cleaned_txt)
         logger.info(f"{output_file} created")
-
-
-#         mcast_txt = convert_input_to_mcast(cleaned_txt)
-#         # logger.info(m3u_txt)
-#         with open(output_file, "w", encoding="utf-8") as file:
-#             file.write(m3u_txt)
-#         logger.info(f"{output_file} created")
-#
 
 
 def extract_hotel_iptv_ips(text):
@@ -219,9 +213,76 @@ def extract_ip_port(text):
 
 def get_ip_port(ip):
     url = f"{php_url}?s={ip}"
-    raw_txt = get_webpage_text_selenium(url, "tmp.txt", False, False, "About \d results")
+    raw_txt = get_webpage_text_selenium(
+        url, "tmp.txt", False, False, "About \d results"
+    )
     ip_port = extract_ip_port(raw_txt)
     return ip_port
+
+
+def is_valid_config(config_info):
+    """Check if given config_info is valid or not"""
+    required_fields = [
+        "bucket_name",
+        "google_application_credentials",
+    ]
+    for field in required_fields:
+        if field not in config_info:
+            logger.error(f"{field} doesn't exist")
+            return False
+    gac = config_info["google_application_credentials"]
+    if not os.path.isfile(gac):
+        logger.error(f"{gac} doesn't exist or is not valid file")
+        return False
+    return True
+
+
+def upload_files_to_gcs(bucket_name, credentials_path):
+    # Set the environment variable for the service account
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
+
+    # Create a client using the service account
+    client = storage.Client()
+
+    # Get the bucket
+    bucket = client.bucket(bucket_name)
+
+    # Define the pattern for matching file names
+    pattern = re.compile(r"mcast_\d+\.txt")
+    curr_dir = os.getcwd()
+    files = os.listdir(curr_dir)
+    # Iterate over files in the source folder
+    for filename in files:
+        if pattern.match(filename):
+            file_path = os.path.join(curr_dir, filename)
+            blob = bucket.blob(filename)
+            blob.upload_from_filename(file_path)
+            logger.info(f"Uploaded {filename} to {bucket_name}")
+
+
+def upload():
+    curr_dir = os.getcwd()
+    config_file_path = f"{curr_dir}/config.yaml"
+    if not os.path.isfile(config_file_path):
+        logger.info("not found config.yaml, skip uploading")
+        return
+    try:
+        with open(config_file_path) as f:
+            config_info = yaml.load(f, Loader=yaml.FullLoader)
+    except IOError as e:
+        logger.error(
+            f"I/O error, Failed to open {config_file_path}, errorcode: {e.errno}, error : {e.strerror}"
+        )
+        sys.exit(-1)
+    except yaml.YAMLError as e:
+        logger.error(f"{config_file_path} is not a valid yaml file, error:{e}")
+        sys.exit(-1)
+    if not is_valid_config(config_info):
+        logger.error(f"invalid content: {config_info}")
+        sys.exit(-1)
+    bucket_name = config_info["bucket_name"]
+    credentials_path = config_info["google_application_credentials"]
+    upload_files_to_gcs(bucket_name, credentials_path)
 
 
 @app.command()
