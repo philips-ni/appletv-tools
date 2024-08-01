@@ -6,6 +6,23 @@ After those source files are created, users can host those files in a home PC ht
 
 See https://youtu.be/66rfnh6UplI
 
+## For lazy users
+
+I have added "upload the live stream source to GCP bucket" feature recently.
+
+I may run the script to collect live stream source and upload to my own GCP bucket from time to time for myself.
+
+For those lazy users, you can use following links directly:
+
+ - https://storage.googleapis.com/my_iptv_source_list_240723/mcast_1.txt
+ - https://storage.googleapis.com/my_iptv_source_list_240723/mcast_2.txt
+ - https://storage.googleapis.com/my_iptv_source_list_240723/mcast_3.txt
+ - https://storage.googleapis.com/my_iptv_source_list_240723/mcast_4.txt
+ - https://storage.googleapis.com/my_iptv_source_list_240723/mcast_5.txt
+ - https://storage.googleapis.com/my_iptv_source_list_240723/mcast_6.txt
+ - https://storage.googleapis.com/my_iptv_source_list_240723/mcast_7.txt
+ - https://storage.googleapis.com/my_iptv_source_list_240723/mcast_8.txt
+
 ## How to install 
 
 ```
