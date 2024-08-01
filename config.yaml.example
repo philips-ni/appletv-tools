@@ -1,0 +1,2 @@
+bucket_name: [YOUR GCP BUCKET NAME]
+google_application_credentials: [YOUR SERVICE ACCOUNT CRED FILE PATH]
