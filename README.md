@@ -24,7 +24,7 @@ For those lazy users, you can use following links directly:
    - https://storage.googleapis.com/my_iptv_source_list_240723/mcast_7.txt
    - https://storage.googleapis.com/my_iptv_source_list_240723/mcast_8.txt
  - 港澳台电视台
-   - https://storage.googleapis.com/my_iptv_source_list_240723/tw_Hk.txt
+   - https://storage.googleapis.com/my_iptv_source_list_240723/tw_HK.txt
 
 ## How to install 
 
