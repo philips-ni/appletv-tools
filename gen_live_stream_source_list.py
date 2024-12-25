@@ -429,6 +429,7 @@ def version() -> None:
     Shows the current version.
     """
     print(VERSION)
+    
 
 
 if __name__ == "__main__":
