@@ -35,13 +35,27 @@ VERSION = "0.1"
 
 
 def get_webpage_text_selenium(
-    url,
-    filename,
-    click_link_2=False,
-    click_link_3=False,
-    search_regex_pattern="http[s]?://",
-    max_retries=10,
-):
+    url: str,
+    filename: str,
+    click_link_2: bool = False,
+    click_link_3: bool = False,
+    search_regex_pattern: str = "http[s]?://",
+    max_retries: int = 10,
+) -> str:
+    """
+    Fetches the text content of a webpage using Selenium, optionally clicking on links and saving the content to a file.
+
+    Args:
+        url (str): The URL of the webpage to fetch.
+        filename (str): The name of the file to save the content.
+        click_link_2 (bool): Whether to click on a link with text "2". Defaults to False.
+        click_link_3 (bool): Whether to click on a link with text "3". Defaults to False.
+        search_regex_pattern (str): The regex pattern to search for in the webpage text. Defaults to "http[s]?://".
+        max_retries (int): The maximum number of retries if no URLs are found. Defaults to 10.
+
+    Returns:
+        str: The text content of the webpage.
+    """
     # Setup Chrome options
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # Run in headless mode
@@ -117,7 +131,16 @@ def get_webpage_text_selenium(
     return ""
 
 
-def clean_raw(raw_txt):
+def clean_raw(raw_txt: str) -> str:
+    """
+    Cleans the raw text by extracting channel names and URLs.
+
+    Args:
+        raw_txt (str): The raw text to clean.
+
+    Returns:
+        str: The cleaned text with channel names and URLs.
+    """
     # Regex pattern to find channel names followed by URLs
     pattern = r"(\w+-?\w*\s*\w*\s*\w*)\n(http://.*)\n"
     # Use re.findall to extract all matches
@@ -129,7 +152,16 @@ def clean_raw(raw_txt):
     return cleaned_txt
 
 
-def convert_input_to_m3u(input_text):
+def convert_input_to_m3u(input_text: str) -> str:
+    """
+    Converts the input text to M3U format.
+
+    Args:
+        input_text (str): The input text to convert.
+
+    Returns:
+        str: The converted text in M3U format.
+    """
     lines = input_text.strip().split("\n")
     output_lines = ["#EXTM3U"]
     for line in lines:
@@ -142,7 +174,14 @@ def convert_input_to_m3u(input_text):
     return "\n".join(output_lines)
 
 
-def gen_output_file(ip_port, output_file):
+def gen_output_file(ip_port: str, output_file: str) -> None:
+    """
+    Generates an output file with cleaned text from the given IP and port.
+
+    Args:
+        ip_port (str): The IP and port to use.
+        output_file (str): The name of the output file.
+    """
     items = ip_port.split(":")
     ip = items[0]
     port = items[1]
@@ -159,7 +198,16 @@ def gen_output_file(ip_port, output_file):
         logger.info(f"{output_file} created")
 
 
-def extract_hotel_iptv_ips(text):
+def extract_hotel_iptv_ips(text: str) -> list:
+    """
+    Extracts hotel IPTV IPs from the given text.
+
+    Args:
+        text (str): The text to extract IPs from.
+
+    Returns:
+        list: A list of extracted IPs.
+    """
     # Define a regular expression pattern to find the line starting with "Hotel IPTV"
     pattern = r"Hotel IPTV\n([\d\.\s]+)"
 
@@ -177,7 +225,16 @@ def extract_hotel_iptv_ips(text):
         return []
 
 
-def extract_mcast_ips(text):
+def extract_mcast_ips(text: str) -> list:
+    """
+    Extracts multicast IPs from the given text.
+
+    Args:
+        text (str): The text to extract IPs from.
+
+    Returns:
+        list: A list of extracted IPs.
+    """
     # Define a regular expression pattern to find the line starting with "Hotel IPTV"
     pattern = r"Multicast IP\n([\d\.\s]+)"
 
@@ -195,7 +252,16 @@ def extract_mcast_ips(text):
         return []
 
 
-def extract_ip_port(text):
+def extract_ip_port(text: str) -> str:
+    """
+    Extracts IP and port from the given text.
+
+    Args:
+        text (str): The text to extract IP and port from.
+
+    Returns:
+        str: The extracted IP and port.
+    """
     # Define a regular expression pattern to find the line starting with "Hotel IPTV"
     pattern = r"About \d results\n([\d\.]+:\d+)"
 
@@ -211,7 +277,16 @@ def extract_ip_port(text):
         return ""
 
 
-def get_ip_port(ip):
+def get_ip_port(ip: str) -> str:
+    """
+    Gets the IP and port for the given IP.
+
+    Args:
+        ip (str): The IP to get the port for.
+
+    Returns:
+        str: The IP and port.
+    """
     url = f"{php_url}?s={ip}"
     raw_txt = get_webpage_text_selenium(
         url, "tmp.txt", False, False, "About \d results"
@@ -220,8 +295,16 @@ def get_ip_port(ip):
     return ip_port
 
 
-def is_valid_config(config_info):
-    """Check if given config_info is valid or not"""
+def is_valid_config(config_info: dict) -> bool:
+    """
+    Checks if the given config_info is valid.
+
+    Args:
+        config_info (dict): The configuration information to check.
+
+    Returns:
+        bool: True if the configuration is valid, False otherwise.
+    """
     required_fields = [
         "bucket_name",
         "google_application_credentials",
@@ -237,7 +320,14 @@ def is_valid_config(config_info):
     return True
 
 
-def upload_files_to_gcs(bucket_name, credentials_path):
+def upload_files_to_gcs(bucket_name: str, credentials_path: str) -> None:
+    """
+    Uploads files to Google Cloud Storage.
+
+    Args:
+        bucket_name (str): The name of the GCS bucket.
+        credentials_path (str): The path to the Google application credentials.
+    """
     # Set the environment variable for the service account
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 
@@ -260,7 +350,10 @@ def upload_files_to_gcs(bucket_name, credentials_path):
             logger.info(f"Uploaded {filename} to {bucket_name}")
 
 
-def upload():
+def upload() -> None:
+    """
+    Uploads files to Google Cloud Storage based on the configuration file.
+    """
     curr_dir = os.getcwd()
     config_file_path = f"{curr_dir}/config.yaml"
     if not os.path.isfile(config_file_path):
@@ -273,20 +366,23 @@ def upload():
         logger.error(
             f"I/O error, Failed to open {config_file_path}, errorcode: {e.errno}, error : {e.strerror}"
         )
-        sys.exit(-1)
+        raise
     except yaml.YAMLError as e:
         logger.error(f"{config_file_path} is not a valid yaml file, error:{e}")
-        sys.exit(-1)
+        raise
     if not is_valid_config(config_info):
         logger.error(f"invalid content: {config_info}")
-        sys.exit(-1)
+        raise ValueError("Invalid configuration content")
     bucket_name = config_info["bucket_name"]
     credentials_path = config_info["google_application_credentials"]
     upload_files_to_gcs(bucket_name, credentials_path)
 
 
 @app.command()
-def hotel():
+def hotel() -> None:
+    """
+    Fetches hotel IPTV IPs and generates output files.
+    """
     filename = "homepage_webpage.txt"
     raw_txt = get_webpage_text_selenium(php_url, filename, False, False, "Hotel IPTV")
     hotel_ips = extract_hotel_iptv_ips(raw_txt)
@@ -301,7 +397,10 @@ def hotel():
 
 
 @app.command()
-def mcast():
+def mcast() -> None:
+    """
+    Fetches multicast IPs and generates output files.
+    """
     filename = "homepage_webpage.txt"
     raw_txt = get_webpage_text_selenium(php_url, filename, False, False, "Multicast IP")
     mcast_ips = extract_mcast_ips(raw_txt)
@@ -316,14 +415,19 @@ def mcast():
 
 
 @app.command()
-def all():
+def all() -> None:
+    """
+    Fetches both hotel IPTV IPs and multicast IPs and generates output files.
+    """
     hotel()
     mcast()
 
 
 @app.command()
-def version():
-    """Show current version"""
+def version() -> None:
+    """
+    Shows the current version.
+    """
     print(VERSION)
 
 
